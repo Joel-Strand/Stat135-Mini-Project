@@ -19,15 +19,20 @@ library(mosaic)
 
 ```{r}
 #| label: import-data
-
 # !!! REPLACE THE LINK WITH THE LINK TO YOUR DATA'S GOOGLE SHEET !!!
-olympic_dat0 <- read_sheet("https://docs.google.com/spreadsheets/d/1qfan0VfEjlRP0i3Gnurjrj1WjV4-FOkmzUEtgvfO5D0/edit#gid=1564269621")
+
+library(tidyverse)
+olympic_dat0 <- readRDS(file=url("https://kcorreia.people.amherst.edu/Stat135/project_scull.Rds")) |>
+  separate(Time, into=c("minute", "second"), sep=":", remove=F) |>
+  mutate(across(c("minute", "second"), ~parse_number(.))
+         , Time_Minutes = minute + (second/60))
+
 
 # if you need to derive new variables from variables in your dataset, I can help you!
-olympic_dat <- olympic_dat0 |>
+#olympic_dat <- olympic_dat0 |>
   # for example, if you need BMI (kg/m^2)
   # divide height (in cm) by 100 to get height in meters
-  mutate(bmi = Weight/((Height/100)^2))
+$  mutate(bmi = Weight/((Height/100)^2))
 ```
 
 ## Descriptive Statistics
