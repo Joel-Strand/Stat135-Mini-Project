@@ -16,23 +16,19 @@ library(mosaic)
 ```
 
 ## Import the data
-
 ```{r}
 #| label: import-data
-# !!! REPLACE THE LINK WITH THE LINK TO YOUR DATA'S GOOGLE SHEET !!!
+knitr::opts_chunk$set(echo = TRUE, eval=F)
 
+library(googlesheets4)
+library(mosaic)
 library(tidyverse)
 olympic_dat0 <- readRDS(file=url("https://kcorreia.people.amherst.edu/Stat135/project_scull.Rds")) |>
   separate(Time, into=c("minute", "second"), sep=":", remove=F) |>
   mutate(across(c("minute", "second"), ~parse_number(.))
-         , Time_Minutes = minute + (second/60))
+         , Time_Minutes = minute + (second/60)
+         , RacingLine = parse_number(`Racing Line`))
 
-
-# if you need to derive new variables from variables in your dataset, I can help you!
-#olympic_dat <- olympic_dat0 |>
-  # for example, if you need BMI (kg/m^2)
-  # divide height (in cm) by 100 to get height in meters
-$  mutate(bmi = Weight/((Height/100)^2))
 ```
 
 ## Descriptive Statistics
@@ -41,12 +37,17 @@ $  mutate(bmi = Weight/((Height/100)^2))
 #| label: desc-stats
  
 # e.g, can use tally to compute descriptive statistics for categorical variables
-tally(~YOUR_VARIABLE, data=olympic_dat)
+#tally(~YOUR_VARIABLE, data=olympic_dat)
+
+tally(~RacingLine, data=olympic_dat0)
+
 
 # e.g., can use favstats to compute descriptive statistics for quantitative variables
-favstats(~YOUR_VARIABLE, data=olympic_dat)
+favstats(~Time_Minutes, data=olympic_dat0)
+
+favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # e.g., by group
-favstats(YOUR_QUANT_VAR ~ YOUR_GROUP_VAR, data=olympic_dat)
+#favstats(YOUR_QUANT_VAR ~ YOUR_GROUP_VAR, data=olympic_dat)
 ```
 
 ## Plot(s)
