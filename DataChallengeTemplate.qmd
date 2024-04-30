@@ -1,0 +1,83 @@
+---
+title: "YOUR TITLE HERE"
+subtitle: "Stat135 - Predicting Paris 2024 Data Challenge"
+author: "YOUR NAMES HERE"
+format: pdf
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+knitr::opts_chunk$set(echo = TRUE, eval=F)
+
+library(googlesheets4)
+library(mosaic)
+```
+
+## Import the data
+
+```{r}
+#| label: import-data
+
+# !!! REPLACE THE LINK WITH THE LINK TO YOUR DATA'S GOOGLE SHEET !!!
+olympic_dat0 <- read_sheet("https://docs.google.com/spreadsheets/d/1cp_VmpyfBeZnY-pYvJ782MA-eOalwcErmH5l8qW3E8E/edit#gid=26032386")
+
+# if you need to derive new variables from variables in your dataset, I can help you!
+olympic_dat <- olympic_dat0 |>
+  # for example, if you need BMI (kg/m^2)
+  # divide height (in cm) by 100 to get height in meters
+  mutate(bmi = Weight/((Height/100)^2))
+```
+
+## Descriptive Statistics
+
+```{r}
+#| label: desc-stats
+ 
+# e.g, can use tally to compute descriptive statistics for categorical variables
+tally(~YOUR_VARIABLE, data=olympic_dat)
+
+# e.g., can use favstats to compute descriptive statistics for quantitative variables
+favstats(~YOUR_VARIABLE, data=olympic_dat)
+# e.g., by group
+favstats(YOUR_QUANT_VAR ~ YOUR_GROUP_VAR, data=olympic_dat)
+```
+
+## Plot(s)
+
+```{r}
+#| label: plotting
+
+# title your plot(s), keeping in mind context and language matter
+# be sure to label all axes appropriately 
+
+# see the mosaic cheatsheet, and relevant labs and problem sets for how to
+# code the plot you want (using one of the gf_XX functions)
+# if you're still stuck or have a question about a particular aspect of the plot,
+# come talk to me - I can help you!
+```
+
+
+## Multiple Linear Regression Model 
+
+```{r}
+#| label: mlr
+
+# include the code to fit your multiple linear regression model 
+# including any checks for relevant assumptions
+# and any inferential procedures you did 
+# (e.g., hypothesis testing or confidence intervals)
+# please use comments to indicate what you're doing
+```
+
+### Prediction
+
+```{r}
+#| label: predict
+
+# include the code to make your prediction for an athlete who
+# is expected to compete in the event this summer
+
+```
+
