@@ -1,7 +1,7 @@
 ---
-title: "YOUR TITLE HERE"
+title: "Olympic Rowing Predictions"
 subtitle: "Stat135 - Predicting Paris 2024 Data Challenge"
-author: "YOUR NAMES HERE"
+author: "Joel, Lauren, Mia, Sam"
 format: pdf
 ---
 
