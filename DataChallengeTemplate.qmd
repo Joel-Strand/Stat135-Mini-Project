@@ -21,7 +21,7 @@ library(mosaic)
 #| label: import-data
 
 # !!! REPLACE THE LINK WITH THE LINK TO YOUR DATA'S GOOGLE SHEET !!!
-olympic_dat0 <- read_sheet("https://docs.google.com/spreadsheets/d/1cp_VmpyfBeZnY-pYvJ782MA-eOalwcErmH5l8qW3E8E/edit#gid=26032386")
+olympic_dat0 <- read_sheet("https://docs.google.com/spreadsheets/d/1qfan0VfEjlRP0i3Gnurjrj1WjV4-FOkmzUEtgvfO5D0/edit#gid=1564269621")
 
 # if you need to derive new variables from variables in your dataset, I can help you!
 olympic_dat <- olympic_dat0 |>
