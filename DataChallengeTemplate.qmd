@@ -69,6 +69,7 @@ gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
            , xlab="Lane"
            , ylab="Time (minutes)"
            , title="Time verses Lane") 
+#scatterplots so no concerning features so we can assume linearity for the regression model
 gf_point(Time_Minutes ~ Height, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 
@@ -97,8 +98,6 @@ gf_point(resid(mod) ~ predict(mod), color="black"
          , xlab="Height (m)"
          , ylab="Residual (minutes)") |>
   gf_abline(intercept=0, slope=0, linetype="dashed", color="darkgrey")
-
-#DO I NEED PARTIAL REGRESSION TO LOOK AT LINEARITY OR DO THE SCATTERPLOTS ABOVE PROVIDE THAT INFORMATION?
 
 #run model with racing lane
 mod2 <- lm(Time_Minutes ~ Height + Weight + RacingLine, data=olympic_dat0)
