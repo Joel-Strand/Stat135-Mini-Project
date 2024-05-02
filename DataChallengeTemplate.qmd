@@ -37,10 +37,8 @@ olympic_dat0 <- readRDS(file=url("https://kcorreia.people.amherst.edu/Stat135/pr
 #| label: desc-stats
  
 # e.g, can use tally to compute descriptive statistics for categorical variables
-#tally(~YOUR_VARIABLE, data=olympic_dat)
 
 tally(~RacingLine, data=olympic_dat0)
-
 
 # e.g., can use favstats to compute descriptive statistics for quantitative variables
 favstats(~Time_Minutes, data=olympic_dat0)
@@ -49,7 +47,6 @@ favstats(~Weight, data=olympic_dat0)
 
 favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # e.g., by group
-#favstats(YOUR_QUANT_VAR ~ YOUR_GROUP_VAR, data=olympic_dat)
 ```
 
 ## Plot(s)
@@ -64,7 +61,7 @@ favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # code the plot you want (using one of the gf_XX functions)
 # if you're still stuck or have a question about a particular aspect of the plot,
 # come talk to me - I can help you!
-```
+
 gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
            , xlab="Lane"
            , ylab="Time (minutes)"
@@ -72,6 +69,8 @@ gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
 #scatterplots so no concerning features so we can assume linearity for the regression model
 gf_point(Time_Minutes ~ Height, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
+```
+
 
 ## Multiple Linear Regression Model 
 
@@ -83,7 +82,6 @@ gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="
 # and any inferential procedures you did 
 # (e.g., hypothesis testing or confidence intervals)
 # please use comments to indicate what you're doing
-```
 
 mod <- lm(Time_Minutes ~ Height + Weight, data=olympic_dat0) 
 msummary(mod)
@@ -102,7 +100,7 @@ gf_point(resid(mod) ~ predict(mod), color="black"
 #run model with racing lane
 mod2 <- lm(Time_Minutes ~ Height + Weight + RacingLine, data=olympic_dat0)
 msummary(mod2)
-
+```
 
 ### Prediction
 
@@ -112,5 +110,9 @@ msummary(mod2)
 # include the code to make your prediction for an athlete who
 # is expected to compete in the event this summer
 
-```
 
+confint(mod, level = 0.95)
+confint(mod2, level = 0.95)
+
+  
+```
