@@ -44,6 +44,8 @@ tally(~RacingLine, data=olympic_dat0)
 
 # e.g., can use favstats to compute descriptive statistics for quantitative variables
 favstats(~Time_Minutes, data=olympic_dat0)
+favstats(~Height, data=olympic_dat0)
+favstats(~Weight, data=olympic_dat0)
 
 favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # e.g., by group
@@ -63,7 +65,12 @@ favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # if you're still stuck or have a question about a particular aspect of the plot,
 # come talk to me - I can help you!
 ```
-
+gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
+           , xlab="Lane"
+           , ylab="Time (minutes)"
+           , title="Time verses Lane") 
+gf_point(Time_Minutes ~ Height, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
+gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 
 ## Multiple Linear Regression Model 
 
@@ -76,6 +83,27 @@ favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # (e.g., hypothesis testing or confidence intervals)
 # please use comments to indicate what you're doing
 ```
+
+mod <- lm(Time_Minutes ~ Height + Weight, data=olympic_dat0) 
+msummary(mod)
+
+#show distribution of the residuals to check for nearly normal
+gf_histogram(~resid(mod), color="black"
+             , xlab="Residuals"
+             , ylab="Time")
+
+#check for equal variance
+gf_point(resid(mod) ~ predict(mod), color="black"
+         , xlab="Height (m)"
+         , ylab="Residual (minutes)") |>
+  gf_abline(intercept=0, slope=0, linetype="dashed", color="darkgrey")
+
+#DO I NEED PARTIAL REGRESSION TO LOOK AT LINEARITY OR DO THE SCATTERPLOTS ABOVE PROVIDE THAT INFORMATION?
+
+#run model with racing lane
+mod2 <- lm(Time_Minutes ~ Height + Weight + RacingLine, data=olympic_dat0)
+msummary(mod2)
+
 
 ### Prediction
 
