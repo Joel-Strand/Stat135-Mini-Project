@@ -27,7 +27,20 @@ olympic_dat0 <- readRDS(file=url("https://kcorreia.people.amherst.edu/Stat135/pr
   separate(Time, into=c("minute", "second"), sep=":", remove=F) |>
   mutate(across(c("minute", "second"), ~parse_number(.))
          , Time_Minutes = minute + (second/60)
-         , RacingLine = parse_number(`Racing Line`))
+         , RacingLane = parse_number(`Racing Line`)
+         , RacingLane_f = factor(case_when(RacingLane %in% c(6) | is.na(RacingLane) ~ "Other"
+                                    , RacingLane == 1 ~ "Lane 1"
+                                    , RacingLane == 2 ~ "Lane 2"
+                                    , RacingLane == 3 ~ "Lane 3 (Referent) "
+                                    , RacingLane == 4 ~ "Lane 4"
+                                    , RacingLane == 5 ~ "Lane 5")
+                                 , levels=c("Lane 3 (Referent)", "Lane 1", "Lane 2", "Lane 4", "Lane 5", "Other")))
+
+# check derivation
+count(olympic_dat0, RacingLane, RacingLane_f)
+
+# check numbers in each group of new variable
+count(olympic_dat0, RacingLane_f)
 
 ```
 
@@ -38,14 +51,14 @@ olympic_dat0 <- readRDS(file=url("https://kcorreia.people.amherst.edu/Stat135/pr
  
 # e.g, can use tally to compute descriptive statistics for categorical variables
 
-tally(~RacingLine, data=olympic_dat0)
+tally(~RacingLane_f, data=olympic_dat0)
 
 # e.g., can use favstats to compute descriptive statistics for quantitative variables
 favstats(~Time_Minutes, data=olympic_dat0)
 favstats(~Height, data=olympic_dat0)
 favstats(~Weight, data=olympic_dat0)
 
-favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
+favstats(Time_Minutes ~ RacingLane_f, data = olympic_dat0)
 # e.g., by group
 ```
 
@@ -62,10 +75,11 @@ favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # if you're still stuck or have a question about a particular aspect of the plot,
 # come talk to me - I can help you!
 
-gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
+gf_boxplot(Time_Minutes ~ RacingLane_f, data = olympic_dat0
            , xlab="Lane"
            , ylab="Time (minutes)"
            , title="Time verses Lane") 
+
 #scatterplots so no concerning features so we can assume linearity for the regression model
 gf_point(Time_Minutes ~ Height, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
@@ -98,7 +112,7 @@ gf_point(resid(mod) ~ predict(mod), color="black"
   gf_abline(intercept=0, slope=0, linetype="dashed", color="darkgrey")
 
 #run model with racing lane
-mod2 <- lm(Time_Minutes ~ Height + Weight + RacingLine, data=olympic_dat0)
+mod2 <- lm(Time_Minutes ~ Height + Weight + RacingLane_f + as.factor(OlypmicCity), data=olympic_dat0)
 msummary(mod2)
 ```
 
