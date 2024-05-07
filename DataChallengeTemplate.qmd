@@ -131,10 +131,10 @@ confint(mod2, level=0.95)
 # include the code to make your prediction for an athlete who
 # is expected to compete in the event this summer
 
-# Prediction for Stefanos Ntouskos
+# Prediction for Eliot Putnam
 
-height <- 1.86 
-weight <- 73
+height <- 1.8796
+weight <- 88.4505
 
 # Prediction with no Racing Line Considered
 prediction_no_RL <- 9.332553 + (-0.002582 * height) + (-0.014838 * weight)
@@ -144,7 +144,10 @@ lanes <- c(1,2,3,4,5)
 predictions_RL <- list()
 for (lane in lanes) { # for loop for predicting each lane
   val <- 9.3356061 + (0.0001034 * height) + (-0.0194020 * weight) + (-0.0300910 * lane) # input values into model
-  predictions <- c(predictions_RL, val) # store predictions in a list for later access.
+  predictions_RL <- c(predictions_RL, val) # store predictions in a list for later access.
 }
+
+print(prediction_no_RL)
+print(predictions_RL)
 
 ```
