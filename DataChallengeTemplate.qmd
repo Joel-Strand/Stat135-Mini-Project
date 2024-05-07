@@ -61,6 +61,9 @@ favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 ```
 
 ## Plot(s)
+gf_bar( ~ OlympicCity, data=olympic_dat0
+        , ylab="Number of Athletes", xlab="Olympic City") +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
 
 ```{r}
 #| label: plotting
@@ -77,7 +80,7 @@ gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
            , xlab="Lane"
            , ylab="Time (minutes)"
            , title="Time verses Lane") 
-#scatterplots so no concerning features so we can assume linearity for the regression model
+#scatterplots show no concerning features so we can assume linearity for the regression model
 gf_point(Time_Minutes ~ Height, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 ```
@@ -94,6 +97,7 @@ gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="
 # (e.g., hypothesis testing or confidence intervals)
 # please use comments to indicate what you're doing
 
+#Start regression to check conditions for nearly normal and equal variance
 mod <- lm(Time_Minutes ~ Height + Weight, data=olympic_dat0) 
 msummary(mod)
 
