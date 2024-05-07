@@ -50,6 +50,8 @@ count(olympic_dat0, RacingLine_f)
 # e.g, can use tally to compute descriptive statistics for categorical variables
 
 tally(~RacingLine, data=olympic_dat0)
+tally(~AnyPriorOlympics, data=olympic_dat0)
+tally(~AnyPriorMedals, data=olympic_dat0)
 
 # e.g., can use favstats to compute descriptive statistics for quantitative variables
 favstats(~Time_Minutes, data=olympic_dat0)
@@ -102,6 +104,7 @@ mod <- lm(Time_Minutes ~ Height + Weight, data=olympic_dat0)
 msummary(mod)
 
 #show distribution of the residuals to check for nearly normal
+#A few gaps may indicate that the model is unimodal but the relative distribution is symmetric and given our sample size our inferences should still be alright due to the central limit theorem. 
 gf_histogram(~resid(mod), color="black"
              , xlab="Residuals"
              , ylab="Time")
