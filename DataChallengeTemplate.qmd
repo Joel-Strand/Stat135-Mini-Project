@@ -63,10 +63,6 @@ favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 ```
 
 ## Plot(s)
-gf_bar( ~ OlympicCity, data=olympic_dat0
-        , ylab="Number of Athletes", xlab="Olympic City") +
-  theme(axis.text.x=element_text(angle=45,hjust=1))
-
 ```{r}
 #| label: plotting
 
@@ -77,6 +73,10 @@ gf_bar( ~ OlympicCity, data=olympic_dat0
 # code the plot you want (using one of the gf_XX functions)
 # if you're still stuck or have a question about a particular aspect of the plot,
 # come talk to me - I can help you!
+
+gf_bar( ~ OlympicCity, data=olympic_dat0
+        , ylab="Number of Athletes", xlab="Olympic City") +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
 
 gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
            , xlab="Lane"
