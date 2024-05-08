@@ -27,19 +27,22 @@ olympic_dat0 <- readRDS(file=url("https://kcorreia.people.amherst.edu/Stat135/pr
   separate(Time, into=c("minute", "second"), sep=":", remove=F) |>
   mutate(across(c("minute", "second"), ~parse_number(.))
          , Time_Minutes = minute + (second/60)
-         , RacingLine = parse_number(`Racing Line`)
-         , RacingLine_f = factor(case_when(RacingLine %in% c(1,6) | is.na(RacingLine) ~ "Other"
-                                    , RacingLine == 2 ~ "Lane 2"
-                                    , RacingLine == 3 ~ "Lane 3 (Referent)"
-                                    , RacingLine == 4 ~ "Lane 4"
-                                    , RacingLine == 5 ~ "Lane 5")
-                                 , levels=c("Lane 3 (Referent)", "Lane 2", "Lane 4", "Lane 5", "Other")))
+         , RacingLane = parse_number(`Racing Line`)
+         , RacingLane_f = factor(case_when(RacingLane %in% c(6) | is.na(RacingLane) ~ "Other"
+                                    , RacingLane == 1 ~ "Lane 1"
+                                    , RacingLane == 2 ~ "Lane 2"
+                                    , RacingLane == 3 ~ "Lane 3 (Referent)"
+                                    , RacingLane == 4 ~ "Lane 4"
+                                    , RacingLane == 5 ~ "Lane 5")
+                                 , levels=c("Lane 3 (Referent)", "Lane 1", "Lane 2", "Lane 4", "Lane 5", "Other")))
+
 
 # check derivation
-count(olympic_dat0, RacingLine, RacingLine_f)
+count(olympic_dat0, RacingLane, RacingLane_f)
 
 # check numbers in each group of new variable
-count(olympic_dat0, RacingLine_f)
+count(olympic_dat0, RacingLane_f)
+
 ```
 
 ## Descriptive Statistics
@@ -49,7 +52,7 @@ count(olympic_dat0, RacingLine_f)
  
 # e.g, can use tally to compute descriptive statistics for categorical variables
 
-tally(~RacingLine, data=olympic_dat0)
+tally(~RacingLane_f, data=olympic_dat0)
 tally(~AnyPriorOlympics, data=olympic_dat0)
 tally(~AnyPriorMedals, data=olympic_dat0)
 
@@ -57,12 +60,33 @@ tally(~AnyPriorMedals, data=olympic_dat0)
 favstats(~Time_Minutes, data=olympic_dat0)
 favstats(~Height, data=olympic_dat0)
 favstats(~Weight, data=olympic_dat0)
-
-favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
+favstats(~Age, data=olympic_dat0)
+gf_histogram( ~ Age, data=olympic_dat0, color="black"
+             , xlab="Age")
+gf_histogram( ~ Time_Minutes, data=olympic_dat0, color="black"
+             , xlab="Time")
+favstats(Time_Minutes ~ RacingLane_f, data = olympic_dat0)
 # e.g., by group
+
+groupedNation<-olympic_dat0 %>% 
+  group_by(NOC) %>% 
+  count() %>%
+  ungroup() %>%
+  mutate(freq. = 100 * n/79)
+
+groupedOlympicCity<-olympic_dat0 %>% 
+  group_by(OlympicCity) %>% 
+  count() %>%
+  ungroup() %>%
+  mutate(freq. = 100 * n/79)
+
+gf_bar( ~ OlympicCity, data=olympic_dat0
+        , ylab="Number of Athletes", xlab = 'Olympic City', title='Number of Athletes per Olympic City') +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
 ```
 
 ## Plot(s)
+
 ```{r}
 #| label: plotting
 
@@ -74,15 +98,12 @@ favstats(Time_Minutes ~ RacingLine, data = olympic_dat0)
 # if you're still stuck or have a question about a particular aspect of the plot,
 # come talk to me - I can help you!
 
-gf_bar( ~ OlympicCity, data=olympic_dat0
-        , ylab="Number of Athletes", xlab="Olympic City") +
-  theme(axis.text.x=element_text(angle=45,hjust=1))
-
-gf_boxplot(Time_Minutes ~ as.factor(RacingLine), data = olympic_dat0
+gf_boxplot(Time_Minutes ~ RacingLane_f, data = olympic_dat0
            , xlab="Lane"
            , ylab="Time (minutes)"
            , title="Time verses Lane") 
-#scatterplots show no concerning features so we can assume linearity for the regression model
+
+#scatterplots so no concerning features so we can assume linearity for the regression model
 gf_point(Time_Minutes ~ Height, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="dashed")
 ```
@@ -99,28 +120,40 @@ gf_point(Time_Minutes ~ Weight, data=olympic_dat0) %>% gf_lm(size=1.5,linetype="
 # (e.g., hypothesis testing or confidence intervals)
 # please use comments to indicate what you're doing
 
-#Start regression to check conditions for nearly normal and equal variance
+#create initial regression without categorical variable to see what distributions look like
 mod <- lm(Time_Minutes ~ Height + Weight, data=olympic_dat0) 
 msummary(mod)
 
 #show distribution of the residuals to check for nearly normal
-#A few gaps may indicate that the model is unimodal but the relative distribution is symmetric and given our sample size our inferences should still be alright due to the central limit theorem. 
-gf_histogram(~resid(mod), color="black"
+gf_histogram(~resid(mod2), color="black"
              , xlab="Residuals"
              , ylab="Time")
 
 #check for equal variance
 gf_point(resid(mod) ~ predict(mod), color="black"
-         , xlab="Height (m)"
-         , ylab="Residual (minutes)") |>
+         , xlab="Predicted Time (minutes)"
+         , ylab="Time Residual (minutes)") |>
   gf_abline(intercept=0, slope=0, linetype="dashed", color="darkgrey")
 
 #run model with racing lane
-mod2 <- lm(Time_Minutes ~ Height + Weight + RacingLine, data=olympic_dat0)
+#we needed to remove some null values to be able to visualize the model 
+mod2 <- lm(Time_Minutes ~ Height + Weight + RacingLane_f, data=na.omit(olympic_dat0))
 msummary(mod2)
 
-confint(mod, level=0.95)
-confint(mod2, level=0.95)
+#Create Residual Plot
+olympicResidualPlot <- olympic_dat0 |>
+  mutate(resid(mod2)
+         ,predict(mod2))
+
+gf_point(Time_Minutes ~ Height, color = ~RacingLane_f, data = na.omit(olympic_dat0) , xlab = 'Height (cm)', ylab = 'Racing Time (minutes)', title ='Time verses Height') |>
+gf_lm()
+
+gf_point(Time_Minutes ~ Weight, color = ~RacingLane_f, data = na.omit(olympic_dat0) , xlab = 'Weight (kg)', ylab = 'Racing Time (minutes)', title ='Time verses Weight') |>
+gf_lm()
+
+
+confint(mod, level = 0.95)
+confint(mod2, level = 0.95)
 ```
 
 ### Prediction
@@ -137,17 +170,29 @@ height <- 1.8796
 weight <- 88.4505
 
 # Prediction with no Racing Line Considered
-prediction_no_RL <- 9.332553 + (-0.002582 * height) + (-0.014838 * weight)
+9.332553 + (-0.002582 * height) + (-0.014838 * weight)
 
 # Predictions with all Racing Lines considered
-lanes <- c(1,2,3,4,5)
-predictions_RL <- list()
-for (lane in lanes) { # for loop for predicting each lane
-  val <- 9.3356061 + (0.0001034 * height) + (-0.0194020 * weight) + (-0.0300910 * lane) # input values into model
-  predictions_RL <- c(predictions_RL, val) # store predictions in a list for later access.
-}
+#lane 1
+9.2711690 + (-0.0003517 * height) + (-0.0188197 * weight) + 0.1530032
+
+#lane 2
+9.2711690 + (-0.0003517 * height) + (-0.0188197 * weight) + -0.0451155
+
+#lane 3
+9.2711690 + (-0.0003517 * height) + (-0.0188197 * weight) 
+
+#lane 4
+9.2711690 + (-0.0003517 * height) + (-0.0188197 * weight) + -0.0087013
+
+#lane 5
+9.2711690 + (-0.0003517 * height) + (-0.0188197 * weight) + 0.0019666
+
+#other lane
+9.2711690 + (-0.0003517 * height) + (-0.0188197 * weight) + -0.2292808
 
 print(prediction_no_RL)
 print(predictions_RL)
 
+  
 ```
