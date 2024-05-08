@@ -191,8 +191,5 @@ weight <- 88.4505
 #other lane
 9.2711690 + (-0.0003517 * height) + (-0.0188197 * weight) + -0.2292808
 
-print(prediction_no_RL)
-print(predictions_RL)
-
   
 ```
